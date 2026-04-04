@@ -1,0 +1,80 @@
+interface Printable {
+    void print();
+}
+
+interface Taxable {
+    double TAXRATE = 0.12;
+    double calculateTax();
+}
+
+class Product implements Printable {
+    String name;
+    double price;
+
+    Product(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    @Override
+    public void print() {
+        System.out.println("Product: " + name + ", Price: " + price);
+    }
+}
+
+class TaxableProduct extends Product implements Taxable {
+    TaxableProduct(String name, double price) {
+        super(name, price);
+    }
+
+    @Override
+    public double calculateTax() {
+        return price * TAXRATE;
+    }
+
+    @Override
+    public void print() {
+        double tax = calculateTax();
+        double total = price + tax;
+        System.out.println("Taxable Product: " + name + ", Price: " + price
+                + ", Tax: " + tax + ", Total: " + total);
+    }
+}
+
+class DigitalProduct extends TaxableProduct {
+    String downloadUrl;
+
+    DigitalProduct(String name, double price, String downloadUrl) {
+        super(name, price);
+        this.downloadUrl = downloadUrl;
+    }
+
+    @Override
+    public void print() {
+        double tax = calculateTax();
+        double total = price + tax;
+        System.out.println("Digital Product: " + name + ", Price: " + price
+                + ", Tax: " + tax + ", Total: " + total
+                + ", Download URL: " + downloadUrl);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Printable[] store = new Printable[] {
+            new Product("Notebook", 9.99),
+            new TaxableProduct("Desk Lamp", 24.50),
+            new DigitalProduct("E-book", 12.99, "https://example.com/download/ebook")
+        };
+
+        double totalTax = 0.0;
+        for (Printable item : store) {
+            item.print();
+            if (item instanceof Taxable taxableItem) {
+                totalTax += taxableItem.calculateTax();
+            }
+        }
+
+        System.out.println("Total tax collected: " + totalTax);
+    }
+}
