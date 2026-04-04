@@ -1,0 +1,50 @@
+class InsufficientFundsException extends Exception {
+    public InsufficientFundsException(double shortfall) {
+        super(String.format("Insufficient funds. You are short by $%.2f", shortfall));
+    }
+}
+
+class BankAccount {
+    private double balance;
+
+    public BankAccount(double initialBalance) {
+        this.balance = initialBalance;
+    }
+
+    public void withdraw(double amount) throws InsufficientFundsException {
+        if (amount > balance) {
+            throw new InsufficientFundsException(amount - balance);
+        }
+        balance -= amount;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+}
+
+class BankApp {
+    public static void main(String[] args) {
+        BankAccount account = new BankAccount(500.00);
+        System.out.printf("Balance: $%.2f%n", account.getBalance());
+
+        try {
+            account.withdraw(200.00);
+            System.out.printf("Withdrew $%.2f. Remaining balance: $%.2f%n",
+                    200.00, account.getBalance());
+            account.withdraw(400.00);
+            System.out.printf("Withdrew $%.2f. Remaining balance: $%.2f%n",
+                    400.00, account.getBalance());
+        } catch (InsufficientFundsException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            account.withdraw(100.00);
+            System.out.printf("Withdrew $%.2f. Remaining balance: $%.2f%n",
+                    100.00, account.getBalance());
+        } catch (InsufficientFundsException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
