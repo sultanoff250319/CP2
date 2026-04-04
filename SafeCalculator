@@ -1,0 +1,39 @@
+import java.util.Scanner;
+
+public class SafeCalculator {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            System.out.print("Enter first number (or ’exit’): ");
+            String firstInput = sc.nextLine();
+            if (firstInput.equals("exit")) {
+                System.out.println("Goodbye!");
+                break;
+            }
+            int firstNum;
+            try {
+                firstNum = Integer.parseInt(firstInput);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Please enter valid integers only.");
+                continue;
+            }
+            System.out.print("Enter second number: ");
+            String secondInput = sc.nextLine();
+            int secondNum;
+            try {
+                secondNum = Integer.parseInt(secondInput);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Please enter valid integers only.");
+                continue;
+            }
+            try {
+                int result = firstNum / secondNum;
+                System.out.println("Result: " + firstNum + "/" + secondNum + "=" + result);
+            } catch (ArithmeticException e) {
+                System.out.println("Error: Cannot divide by zero. Try again.");
+                continue;
+            }
+        }
+        sc.close();
+    }
+}
