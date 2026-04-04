@@ -1,0 +1,30 @@
+import java.io.PrintWriter;
+
+public class FileLogger {
+
+    public static void writeLog(String filename, String message) {
+        PrintWriter writer = null;
+        try {
+            writer = new PrintWriter(filename);
+            writer.println(new java.util.Date() + ": " + message);
+            throw new RuntimeException("Simulated write error");
+        } catch (java.io.FileNotFoundException e) {
+            System.out.println("Unable to open file: " + e.getMessage());
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+            // The finally block is important because it ensures the writer
+            // is closed even when an exception occurs, preventing resource leaks.
+            System.out.println("Logger closed.");
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            writeLog("log.txt", "Message");
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
