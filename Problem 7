@@ -1,0 +1,117 @@
+public class Main {
+    public static void main(String[] args) {
+        PayrollSystem payroll = new PayrollSystem();
+        payroll.generatePayrollReport();
+    }
+}
+
+class InvalidSalaryException extends Exception {
+    public InvalidSalaryException(String message) {
+        super(message);
+    }
+}
+
+abstract class Employee {
+    protected String name;
+    protected String id;
+    
+    public Employee(String name, String id) {
+        this.name = name;
+        this.id = id;
+    }
+    
+    abstract double calculateMonthlySalary() throws InvalidSalaryException;
+    
+    double printPaySlip() {
+        try {
+            double salary = calculateMonthlySalary();
+            System.out.println(name + " (" + id + "): $" + String.format("%.2f", salary));
+            return salary;
+        } catch (InvalidSalaryException e) {
+            System.out.println(name + " (" + id + "): Error - " + e.getMessage());
+            return 0;
+        }
+    }
+}
+
+class FullTimeEmployee extends Employee {
+    private double annualSalary;
+    
+    public FullTimeEmployee(String name, String id, double annualSalary) {
+        super(name, id);
+        this.annualSalary = annualSalary;
+    }
+    
+    @Override
+    double calculateMonthlySalary() throws InvalidSalaryException {
+        if (annualSalary <= 0) {
+            throw new InvalidSalaryException("Annual salary must be greater than 0");
+        }
+        return annualSalary / 12;
+    }
+}
+
+class PartTimeEmployee extends Employee {
+    private double hourlyRate;
+    private int hoursWorked;
+    
+    public PartTimeEmployee(String name, String id, double hourlyRate, int hoursWorked) {
+        super(name, id);
+        this.hourlyRate = hourlyRate;
+        this.hoursWorked = hoursWorked;
+    }
+    
+    @Override
+    double calculateMonthlySalary() throws InvalidSalaryException {
+        if (hourlyRate <= 0 || hoursWorked <= 0) {
+            throw new InvalidSalaryException("Hourly rate and hours worked must be positive");
+        }
+        return hourlyRate * hoursWorked;
+    }
+}
+
+class CommissionEmployee extends Employee {
+    private double baseSalary;
+    private double salesAmount;
+    private double commissionRate;
+    
+    public CommissionEmployee(String name, String id, double baseSalary, double salesAmount, double commissionRate) {
+        super(name, id);
+        this.baseSalary = baseSalary;
+        this.salesAmount = salesAmount;
+        this.commissionRate = commissionRate;
+    }
+    
+    @Override
+    double calculateMonthlySalary() throws InvalidSalaryException {
+        if (commissionRate < 0 || commissionRate > 1) {
+            throw new InvalidSalaryException("Commission rate must be between 0 and 1");
+        }
+        return baseSalary + (salesAmount * commissionRate);
+    }
+}
+
+class PayrollSystem {
+    private Employee[] employees;
+    
+    public PayrollSystem() {
+        Employee[] employees = new Employee[6];
+        employees[0] = new FullTimeEmployee("Alex", "E001", 60000);
+        employees[1] = new FullTimeEmployee("Sam", "E002", -50000); // Invalid
+        employees[2] = new PartTimeEmployee("Bob", "E003", 15.5, 80);
+        employees[3] = new PartTimeEmployee("Harvey", "E004", -10, 100); // Invalid
+        employees[4] = new CommissionEmployee("Mike", "E005", 3000, 50000, 0.05);
+        employees[5] = new CommissionEmployee("Rachel", "E006", 2500, 30000, 1.5); // Invalid
+    }
+    
+    public void generatePayrollReport() {
+        double totalPayroll = 0;
+        System.out.println("=== PAYROLL REPORT ===\n");
+        
+        for (Employee emp : employees) {
+            totalPayroll += emp.printPaySlip();
+        }
+        
+        System.out.println("\nTotal Valid Monthly Payroll: $" + String.format("%.2f", totalPayroll));
+    }
+}
