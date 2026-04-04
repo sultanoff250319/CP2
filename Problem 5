@@ -1,0 +1,127 @@
+abstract class Shape {
+    protected String color;
+
+    Shape(String color) {
+        this.color = color;
+    }
+
+    abstract double getArea();
+    abstract double getPerimeter();
+
+    void displayInfo() {
+        System.out.printf(
+            "%s color=%s area=%.2f perimeter=%.2f%n",
+            getClass().getSimpleName(),
+            color,
+            getArea(),
+            getPerimeter()
+        );
+    }
+}
+
+class Circle extends Shape {
+    private double radius;
+
+    Circle(String color, double radius) {
+        super(color);
+        this.radius = radius;
+    }
+
+    @Override
+    double getArea() {
+        return Math.PI * radius * radius;
+    }
+
+    @Override
+    double getPerimeter() {
+        return 2 * Math.PI * radius;
+    }
+}
+
+class Rectangle extends Shape {
+    private double width;
+    private double height;
+
+    Rectangle(String color, double width, double height) {
+        super(color);
+        this.width = width;
+        this.height = height;
+    }
+
+    @Override
+    double getArea() {
+        return width * height;
+    }
+
+    @Override
+    double getPerimeter() {
+        return 2 * (width + height);
+    }
+}
+
+class Triangle extends Shape {
+    private double sideA;
+    private double sideB;
+    private double sideC;
+
+    Triangle(String color, double sideA, double sideB, double sideC) {
+        super(color);
+        this.sideA = sideA;
+        this.sideB = sideB;
+        this.sideC = sideC;
+    }
+
+    @Override
+    double getArea() {
+        double p = getPerimeter();
+        double s = p / 2.0;
+        return Math.sqrt(s * (s - sideA) * (s - sideB) * (s - sideC));
+    }
+
+    @Override
+    double getPerimeter() {
+        return sideA + sideB + sideC;
+    }
+}
+
+class ShapeDemo {
+    public static void main(String[] args) {
+        Shape[] shapes = new Shape[] {
+            new Circle("Red", 2.5),
+            new Rectangle("Blue", 3.0, 4.0),
+            new Triangle("Green", 3.0, 4.0, 5.0),
+            new Circle("Yellow", 1.75),
+            new Rectangle("Magenta", 5.0, 2.5),
+            new Triangle("Cyan", 6.0, 7.0, 8.0)
+        };
+
+        for (Shape shape : shapes) {
+            shape.displayInfo();
+        }
+
+        Shape largest = findLargest(shapes);
+        double totalArea = 0.0;
+        for (Shape shape : shapes) {
+            totalArea += shape.getArea();
+        }
+
+        System.out.println();
+        System.out.printf("Largest shape: %s with area=%.2f%n",
+            largest.getClass().getSimpleName(),
+            largest.getArea());
+        System.out.printf("Total combined area: %.2f%n", totalArea);
+    }
+
+    static Shape findLargest(Shape[] shapes) {
+        if (shapes == null || shapes.length == 0) {
+            return null;
+        }
+        Shape largest = shapes[0];
+        for (int i = 1; i < shapes.length; i++) {
+            if (shapes[i].getArea() > largest.getArea()) {
+                largest = shapes[i];
+            }
+        }
+        return largest;
+    }
+}
